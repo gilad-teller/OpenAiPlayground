@@ -14,6 +14,8 @@ if not api_key:
 result = subprocess.run('git diff --cached', capture_output=True, text=True)
 if result.stderr:
     raise Exception('git diff --cached returned error', result.stderr)
+if not result.stdout:
+    raise Exception('git diff --cached returned no changes', result.stderr)
 
 openai.organization = organization
 openai.api_key = api_key
