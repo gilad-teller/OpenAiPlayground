@@ -1,6 +1,11 @@
 import os
 import openai
 import subprocess
+import json
+
+def copy_to_clip(text):
+    command = 'echo {}|clip'.format(text.strip())
+    subprocess.check_call(command, shell=True)
 
 def run_subprocess(command):
     result = subprocess.run(command, capture_output=True, text=True)
@@ -29,7 +34,7 @@ if not result:
 print('Calling OpenAI')
 openai.organization = organization
 openai.api_key = api_key
-text = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). \n' + result
+text = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n' + result
 response = openai.Completion.create(
   model="text-davinci-003",
   prompt=text,
@@ -39,5 +44,26 @@ response = openai.Completion.create(
   frequency_penalty=0.0,
   presence_penalty=0.0
 )
+
+suggestions = []
 for choice in response['choices']:
-    print(choice['text'])
+    startJson = choice['text'].index('[')
+    endJson = choice['text'].rindex(']') + 1
+    jsonResult = choice['text'][startJson:endJson]
+    newSuggestions = json.loads(jsonResult)
+    suggestions.extend(newSuggestions)
+
+ind = 1
+for s in suggestions:
+    print("{}. {}".format(ind, s))
+    ind += 1
+
+selection = int(input("Selection: ")) - 1
+ticket = input("Ticket: ")
+commitMessage = ""
+if ticket:
+    commitMessage = 'git commit -am "{} {}"'.format(ticket, suggestions[selection])
+else:
+    commitMessage = 'git commit -am "{}"'.format(suggestions[selection])
+copy_to_clip(commitMessage)
+print("{} was copied to clipboard".format(commitMessage))
