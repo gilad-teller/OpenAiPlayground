@@ -19,9 +19,23 @@ def get_env_var(name):
         raise Exception('No {} environment variable'.format(name))
     return env_var
 
+def call_openai(prompt):
+    response = openai.Completion.create(
+      model="text-davinci-003",
+      prompt=prompt,
+      temperature=0.7,
+      max_tokens=100,
+      top_p=1,
+      frequency_penalty=0.0,
+      presence_penalty=0.0
+    )
+    return response
+
 print('Getting environment variables')
 api_key = get_env_var("OPENAI_API_KEY")
 organization = get_env_var("OPENAI_ORG")
+openai.organization = organization
+openai.api_key = api_key
 
 print('Running git diff --cached')
 result = run_subprocess('git diff --cached')
@@ -32,33 +46,21 @@ if not result:
     raise Exception('No diff')
 
 print('Calling OpenAI')
-openai.organization = organization
-openai.api_key = api_key
 prompt = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n' + result
-response = openai.Completion.create(
-  model="text-davinci-003",
-  prompt=prompt,
-  temperature=0.7,
-  max_tokens=100,
-  top_p=1,
-  frequency_penalty=0.0,
-  presence_penalty=0.0
-)
+response = call_openai(prompt)
 
-suggestions = []
-for choice in response['choices']:
-    startJson = choice['text'].index('[')
-    endJson = choice['text'].rindex(']') + 1
-    jsonResult = choice['text'][startJson:endJson]
-    newSuggestions = json.loads(jsonResult)
-    suggestions.extend(newSuggestions)
+firstChoice = response['choices'][0]
+startJson = firstChoice['text'].index('[')
+endJson = firstChoice['text'].rindex(']') + 1
+jsonResult = firstChoice['text'][startJson:endJson]
+suggestions = json.loads(jsonResult)
 
 ind = 1
 for s in suggestions:
     print("{}. {}".format(ind, s))
     ind += 1
 
-selection = int(input("Selection: ")) - 1
+selection = int(input("Selection: "))
 ticket = input("Ticket: ")
 commitMessage = ""
 if ticket:
