@@ -31,6 +31,13 @@ def call_openai(prompt):
     )
     return response
 
+def extract_suggestions(response):
+    firstChoice = response['choices'][0]['text']
+    startJson = firstChoice.index('[')
+    endJson = firstChoice.rindex(']') + 1
+    jsonResult = firstChoice[startJson:endJson]
+    return json.loads(jsonResult)
+
 print('Getting environment variables')
 api_key = get_env_var("OPENAI_API_KEY")
 organization = get_env_var("OPENAI_ORG")
@@ -48,19 +55,26 @@ if not result:
 print('Calling OpenAI')
 prompt = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n' + result
 response = call_openai(prompt)
+suggestions = extract_suggestions(response)
 
-firstChoice = response['choices'][0]
-startJson = firstChoice['text'].index('[')
-endJson = firstChoice['text'].rindex(']') + 1
-jsonResult = firstChoice['text'][startJson:endJson]
-suggestions = json.loads(jsonResult)
-
+print("0. Get more suggestions")
 ind = 1
 for s in suggestions:
     print("{}. {}".format(ind, s))
     ind += 1
 
 selection = int(input("Selection: "))
+
+if selection == 0:
+    print("Calling OpenAI")
+    second_response = call_openai(prompt + response['choices'][0]['text'] + "\nGive me a few more suggestions")
+    new_suggestions = extract_suggestions(second_response)
+    suggestions.extend(new_suggestions)
+    for s in new_suggestions:
+        print("{}. {}".format(ind, s))
+        ind += 1
+    selection = int(input("Selection: "))
+
 ticket = input("Ticket: ")
 commitMessage = ""
 if ticket:
