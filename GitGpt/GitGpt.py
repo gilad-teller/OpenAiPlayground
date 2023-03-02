@@ -33,10 +33,15 @@ def call_openai(prompt):
 
 def extract_suggestions(response):
     firstChoice = response['choices'][0]['text']
-    startJson = firstChoice.index('[')
-    endJson = firstChoice.rindex(']') + 1
-    jsonResult = firstChoice[startJson:endJson]
-    return json.loads(jsonResult)
+    try:
+        startJson = firstChoice.index('[')
+        endJson = firstChoice.rindex(']') + 1
+        jsonResult = firstChoice[startJson:endJson]
+        return json.loads(jsonResult)
+    except:
+        print("\nCan't find suggestions. The response was:")
+        print(firstChoice)
+        raise
 
 print('Getting environment variables')
 api_key = get_env_var("OPENAI_API_KEY")
@@ -54,6 +59,7 @@ if not result:
 
 print('Calling OpenAI')
 prompt = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n' + result
+print(prompt)
 response = call_openai(prompt)
 suggestions = extract_suggestions(response)
 
