@@ -47,9 +47,9 @@ openai.api_key = api_key
 print('Running git diff --cached')
 result = run_subprocess('git diff --cached')
 if not result:
+    print('No result, running git diff')
     result = run_subprocess('git diff')
 if not result:
-    print('No result, running git diff')
     raise Exception('No diff')
 
 print('Calling OpenAI')
@@ -78,8 +78,8 @@ if selection == 0:
 ticket = input("Ticket: ")
 commitMessage = ""
 if ticket:
-    commitMessage = 'git commit -am "{} {}"'.format(ticket, suggestions[selection])
+    commitMessage = 'git commit -am "{} {}"'.format(ticket, suggestions[selection - 1])
 else:
-    commitMessage = 'git commit -am "{}"'.format(suggestions[selection])
+    commitMessage = 'git commit -am "{}"'.format(suggestions[selection - 1])
 copy_to_clip(commitMessage)
 print("{} was copied to clipboard".format(commitMessage))
