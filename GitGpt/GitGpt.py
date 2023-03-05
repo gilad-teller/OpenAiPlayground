@@ -19,20 +19,15 @@ def get_env_var(name):
         raise Exception('No {} environment variable'.format(name))
     return env_var
 
-def call_openai(prompt):
-    response = openai.Completion.create(
-      model="text-davinci-003",
-      prompt=prompt,
-      temperature=0.7,
-      max_tokens=100,
-      top_p=1,
-      frequency_penalty=0.0,
-      presence_penalty=0.0
+def call_openai(messages):
+    response = openai.ChatCompletion.create(
+      model="gpt-3.5-turbo",
+      messages = messages
     )
     return response
 
 def extract_suggestions(response):
-    firstChoice = response['choices'][0]['text']
+    firstChoice = response['choices'][0]['message']['content']
     try:
         startJson = firstChoice.index('[')
         endJson = firstChoice.rindex(']') + 1
@@ -58,10 +53,13 @@ if not result:
     raise Exception('No diff')
 
 print('Calling OpenAI')
-prompt = 'Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n' + result
-print(prompt)
-response = call_openai(prompt)
+messages = [
+    {"role": "system", "content": "You are a helpful assistant, and an expert in creating git commit messages."},
+    {"role": "user", "content": "Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n" + result}
+]
+response = call_openai(messages)
 suggestions = extract_suggestions(response)
+messages.append(response['choices'][0]['message'])
 
 print("0. Get more suggestions")
 ind = 1
@@ -73,7 +71,8 @@ selection = int(input("Selection: "))
 
 if selection == 0:
     print("Calling OpenAI")
-    second_response = call_openai(prompt + response['choices'][0]['text'] + "\nGive me a few more suggestions")
+    messages.append({"role": "user", "content": "Give me a few more suggestions."})
+    second_response = call_openai(messages)
     new_suggestions = extract_suggestions(second_response)
     suggestions.extend(new_suggestions)
     for s in new_suggestions:
