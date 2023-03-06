@@ -32,7 +32,14 @@ def extract_suggestions(response):
         startJson = firstChoice.index('[')
         endJson = firstChoice.rindex(']') + 1
         jsonResult = firstChoice[startJson:endJson]
-        return json.loads(jsonResult)
+        parsedJson = json.loads(jsonResult)
+        try:
+            suggestions = []
+            for s in parsedJson:
+                suggestions.append("{}: {}".format(s["type"], s["subject"]))
+            return suggestions
+        except:
+            return parsedJson
     except:
         print("\nCan't find suggestions. The response was:")
         print(firstChoice)
