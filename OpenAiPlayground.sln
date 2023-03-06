@@ -5,6 +5,10 @@ VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "GitGpt", "GitGpt\GitGpt.pyproj", "{36447420-96E0-4C89-BB5A-978A7AE88AEA}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConsoleChatGpt", "ConsoleChatGpt\ConsoleChatGpt.pyproj", "{47688BFA-DC5E-4924-A7F7-F2AFDB8CDAF0}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConsoleImageGeneration", "ConsoleImageGeneration\ConsoleImageGeneration.pyproj", "{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +17,10 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{36447420-96E0-4C89-BB5A-978A7AE88AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{36447420-96E0-4C89-BB5A-978A7AE88AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47688BFA-DC5E-4924-A7F7-F2AFDB8CDAF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47688BFA-DC5E-4924-A7F7-F2AFDB8CDAF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
