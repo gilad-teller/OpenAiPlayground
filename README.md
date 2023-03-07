@@ -1,6 +1,7 @@
-# GitGpt
-Get git commit messages suggestions from GPT-3
+# Open AI Playground
+Playing around with OpenAI
 
-## Before running for the first time
-- You need to register to a paid subscription to OpenAI and add OPENAI_API_KEY and OPENAI_ORG as environment variables to your machine
-- Run pip install openai
+## Available scripts
+- **GitGPT:** Get commit massages from GPT-3.5 (ChatGPT)
+- **ConsoleChatGPT:** Console app to talk to ChatGPT
+- **ConsoleImageGeneration:** Console app to generate images with DALL·E 2
