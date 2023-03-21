@@ -65,8 +65,16 @@ messages = [
     {"role": "user", "content": "Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n" + result}
 ]
 response = call_openai(messages)
-suggestions = extract_suggestions(response)
 messages.append(response['choices'][0]['message'])
+suggestions = []
+try:
+    suggestions.extend(extract_suggestions(response))
+except:
+    print("Calling OpenAI")
+    messages.append({"role": "user", "content": "I couldn't parse the json you sent. Pleaese fix it."})
+    response = call_openai(messages)
+    messages.append(response['choices'][0]['message'])
+    suggestions.extend(extract_suggestions(response))
 
 print("0. Get more suggestions")
 ind = 1

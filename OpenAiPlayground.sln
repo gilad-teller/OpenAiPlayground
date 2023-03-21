@@ -9,6 +9,11 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConsoleChatGpt", "ConsoleCh
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConsoleImageGeneration", "ConsoleImageGeneration\ConsoleImageGeneration.pyproj", "{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D340C18C-A371-4A93-B441-C7D06386BB60}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

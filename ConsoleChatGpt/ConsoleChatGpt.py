@@ -16,6 +16,7 @@ def call_openai(messages):
 
 RED = "\033[1;31m"
 GREEN = "\033[0;32m"
+BLUE = "\033[0;34m"
 RESET = "\033[0;0m"
 
 print('Getting environment variables')
@@ -24,15 +25,16 @@ organization = get_env_var("OPENAI_ORG")
 openai.organization = organization
 openai.api_key = api_key
 
+userInput = input(f"\n{BLUE}System:{RESET} ") or "You are a helpful assistant."
 messages = [
-    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "system", "content": userInput},
 ]
 print('You can now start chatting')
-userInput = input("\n" + RED + "User: " + RESET)
+userInput = input(f"\n{RED}User:{RESET} ")
 while userInput:
     messages.append({"role": "user", "content": userInput})
     response = call_openai(messages)
     chatResponse = response['choices'][0]['message']
-    print('\n{}ChatGPT:{} {}'.format(GREEN, RESET, chatResponse['content']))
+    print(f"\n{GREEN}ChatGPT:{RESET} {chatResponse['content']}")
     messages.append(chatResponse)
-    userInput = input("\n" + RED + "User: " + RESET)
+    userInput = input(f"\n{RED}User:{RESET} ")
