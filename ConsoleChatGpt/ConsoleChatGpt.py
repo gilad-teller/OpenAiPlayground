@@ -10,7 +10,8 @@ def get_env_var(name):
 def call_openai(messages):
     response = openai.ChatCompletion.create(
       model="gpt-3.5-turbo",
-      messages = messages
+      messages = messages,
+      stream=True
     )
     return response
 
@@ -34,7 +35,11 @@ userInput = input(f"\n{RED}User:{RESET} ")
 while userInput:
     messages.append({"role": "user", "content": userInput})
     response = call_openai(messages)
-    chatResponse = response['choices'][0]['message']
-    print(f"\n{GREEN}ChatGPT:{RESET} {chatResponse['content']}")
-    messages.append(chatResponse)
-    userInput = input(f"\n{RED}User:{RESET} ")
+    print(f"\n{GREEN}ChatGPT:{RESET} ", end ='')
+    chatResponse = ''
+    for chunk in response:
+        if 'content' in chunk['choices'][0]['delta']:
+            print(chunk['choices'][0]['delta']['content'], end ='')
+            chatResponse += chunk['choices'][0]['delta']['content']
+    messages.append({ 'role': 'assistant', 'content': chatResponse })
+    userInput = input(f"\n\n{RED}User:{RESET} ")
