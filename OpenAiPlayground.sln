@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PrGpt", "PrGpt\PrGpt.pyproj", "{39190238-0F02-4307-A3CA-B842124F92C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,8 @@ Global
 		{47688BFA-DC5E-4924-A7F7-F2AFDB8CDAF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A31FEFDD-5D2E-43F9-95D9-7FC4858CC961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39190238-0F02-4307-A3CA-B842124F92C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39190238-0F02-4307-A3CA-B842124F92C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
