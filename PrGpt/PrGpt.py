@@ -50,7 +50,7 @@ for chunk in response:
         print(chunk['choices'][0]['delta']['content'], end ='')
         chatResponse += chunk['choices'][0]['delta']['content']
 messages.append({ 'role': 'assistant', 'content': chatResponse })
-userInput = input(f"\n\n}User: ")
+userInput = input(f"\n\nUser: ")
 
 while userInput:
     messages.append({"role": "user", "content": userInput})
