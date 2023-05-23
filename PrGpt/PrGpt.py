@@ -22,11 +22,6 @@ def call_openai(messages):
     )
     return response
 
-RED = "\033[1;31m"
-GREEN = "\033[0;32m"
-BLUE = "\033[0;34m"
-RESET = "\033[0;0m"
-
 print('Getting environment variables')
 api_key = get_env_var("OPENAI_API_KEY")
 organization = get_env_var("OPENAI_ORG")
@@ -48,23 +43,23 @@ messages = [
     {"role": "user", "content": f"Please use this git diff in order to review my code. Looks for potential bugs, unhandled edge case, etc. \n {result}"}
 ]
 response = call_openai(messages)
-print(f"\n{GREEN}ChatGPT:{RESET} ", end ='')
+print(f"\nChatGPT: ", end ='')
 chatResponse = ''
 for chunk in response:
     if 'content' in chunk['choices'][0]['delta']:
         print(chunk['choices'][0]['delta']['content'], end ='')
         chatResponse += chunk['choices'][0]['delta']['content']
 messages.append({ 'role': 'assistant', 'content': chatResponse })
-userInput = input(f"\n\n{RED}User:{RESET} ")
+userInput = input(f"\n\n}User: ")
 
 while userInput:
     messages.append({"role": "user", "content": userInput})
     response = call_openai(messages)
-    print(f"\n{GREEN}ChatGPT:{RESET} ", end ='')
+    print(f"\nChatGPT: ", end ='')
     chatResponse = ''
     for chunk in response:
         if 'content' in chunk['choices'][0]['delta']:
             print(chunk['choices'][0]['delta']['content'], end ='')
             chatResponse += chunk['choices'][0]['delta']['content']
     messages.append({ 'role': 'assistant', 'content': chatResponse })
-    userInput = input(f"\n\n{RED}User:{RESET} ")
+    userInput = input(f"\n\nUser: ")
