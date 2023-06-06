@@ -8,12 +8,21 @@ def get_env_var(name):
     return env_var
 
 def call_openai(messages):
-    response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
-      messages = messages,
-      stream=True
-    )
-    return response
+    i = 0
+    while True:
+        i += 1
+        try:
+            response = openai.ChatCompletion.create(
+              model="gpt-3.5-turbo",
+              messages = messages,
+              stream=True
+            )
+            return response
+        except Exception as e:
+            if i < 3:
+                print('Error, trying again')
+            else:
+                raise e
 
 RED = "\033[1;31m"
 GREEN = "\033[0;32m"
