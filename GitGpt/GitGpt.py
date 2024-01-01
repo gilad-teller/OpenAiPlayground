@@ -20,7 +20,7 @@ def get_env_var(name):
     return env_var
 
 def call_openai(messages):
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
       model="gpt-4-1106-preview",
       response_format = { "type": "json_object" },
       messages = messages
@@ -28,7 +28,7 @@ def call_openai(messages):
     return response
 
 def extract_suggestions(response):
-    firstChoice = response['choices'][0]['message']['content']
+    firstChoice = response.choices[0].message.content
     try:
         startJson = firstChoice.index('[')
         endJson = firstChoice.rindex(']') + 1
@@ -66,7 +66,7 @@ messages = [
     {"role": "user", "content": "Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n" + result}
 ]
 response = call_openai(messages)
-messages.append(response['choices'][0]['message'])
+messages.append(response.choices[0].message.content)
 suggestions = []
 try:
     suggestions.extend(extract_suggestions(response))

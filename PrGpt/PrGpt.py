@@ -15,7 +15,7 @@ def get_env_var(name):
     return env_var
 
 def call_openai(messages):
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
       model="gpt-4",
       messages = messages,
       stream=True
@@ -46,9 +46,9 @@ response = call_openai(messages)
 print(f"\nChatGPT: ", end ='')
 chatResponse = ''
 for chunk in response:
-    if 'content' in chunk['choices'][0]['delta']:
-        print(chunk['choices'][0]['delta']['content'], end ='')
-        chatResponse += chunk['choices'][0]['delta']['content']
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end ='')
+        chatResponse += chunk.choices[0].delta.content
 messages.append({ 'role': 'assistant', 'content': chatResponse })
 userInput = input(f"\n\nUser: ")
 
@@ -58,8 +58,8 @@ while userInput:
     print(f"\nChatGPT: ", end ='')
     chatResponse = ''
     for chunk in response:
-        if 'content' in chunk['choices'][0]['delta']:
-            print(chunk['choices'][0]['delta']['content'], end ='')
-            chatResponse += chunk['choices'][0]['delta']['content']
+        if chunk.choices[0].delta.content is not None:
+            print(chunk.choices[0].delta.content, end ='')
+            chatResponse += chunk.choices[0].delta.content
     messages.append({ 'role': 'assistant', 'content': chatResponse })
     userInput = input(f"\n\nUser: ")
