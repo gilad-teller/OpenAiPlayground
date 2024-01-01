@@ -12,7 +12,7 @@ def call_openai(messages):
     while True:
         i += 1
         try:
-            response = openai.ChatCompletion.create(
+            response = openai.chat.completions.create(
               model="gpt-4",
               messages = messages,
               stream=True
@@ -47,8 +47,8 @@ while userInput:
     print(f"\n{GREEN}ChatGPT:{RESET} ", end ='')
     chatResponse = ''
     for chunk in response:
-        if 'content' in chunk['choices'][0]['delta']:
-            print(chunk['choices'][0]['delta']['content'], end ='')
-            chatResponse += chunk['choices'][0]['delta']['content']
+        if chunk.choices[0].delta.content is not None:
+            print(chunk.choices[0].delta.content, end="")
+            chatResponse += chunk.choices[0].delta.content
     messages.append({ 'role': 'assistant', 'content': chatResponse })
     userInput = input(f"\n\n{RED}User:{RESET} ")
