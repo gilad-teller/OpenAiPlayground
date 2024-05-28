@@ -15,29 +15,32 @@ openai.organization = organization
 openai.api_key = api_key
 
 def call_openai(prompt, size):
-    if size == "s" or size == "S":
-        sizeValue = "256x256"
-    elif size == "m" or size == "M":
-        sizeValue = "512x512"
-    elif size == "l" or size == "L":
+    if size == "1":
         sizeValue = "1024x1024"
+    elif size == "2":
+        sizeValue = "1024x1792"
+    elif size == "3":
+        sizeValue = "1792x1024"
     response = openai.images.generate(
         model = "dall-e-3",
         prompt = prompt,
+        quality = 'hd',
         size = sizeValue
     )
     return response
 
-def open_url(datum):
-    url = datum["url"]
-    webbrowser.open_new_tab(url)
-
 prompt = input("Prompt: ")
-size = input("Size (S,M,L): ")
+print('Choose size:')
+print('1: 1024x1024')
+print('2: 1024x1792 (portrait)')
+print('3: 1792x1024 (landscape)')
+size = input("Size (1,2,3): ")
 print("Calling OpanAI")
 response = call_openai(prompt, size)
 
 url = response.data[0].url
+revised_prompt = response.data[0].revised_prompt
 print(url)
+print(revised_prompt)
 input("Press ENTER to open URL")
 webbrowser.open_new_tab(url)

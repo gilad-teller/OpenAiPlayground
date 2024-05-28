@@ -13,7 +13,7 @@ def call_openai(messages):
         i += 1
         try:
             response = openai.chat.completions.create(
-              model="gpt-4",
+              model="gpt-4o",
               messages = messages,
               stream=True
             )

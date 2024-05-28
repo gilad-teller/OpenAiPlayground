@@ -21,7 +21,7 @@ def get_env_var(name):
 
 def call_openai(messages):
     response = openai.chat.completions.create(
-      model="gpt-4-1106-preview",
+      model="gpt-4o",
       response_format = { "type": "json_object" },
       messages = messages
     )

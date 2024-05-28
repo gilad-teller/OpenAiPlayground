@@ -16,7 +16,7 @@ def get_env_var(name):
 
 def call_openai(messages):
     response = openai.chat.completions.create(
-      model="gpt-4",
+      model="gpt-4o",
       messages = messages,
       stream=True
     )
