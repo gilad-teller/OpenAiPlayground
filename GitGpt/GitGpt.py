@@ -83,9 +83,9 @@ for s in suggestions:
     print("{}. {}".format(ind, s))
     ind += 1
 
-selection = int(input("Selection: "))
+selections = input("Selection: ").split()
 
-if selection == 0:
+if selections[0] == '0':
     print("Calling OpenAI")
     messages.append({"role": "user", "content": "Give me a few more suggestions."})
     second_response = call_openai(messages)
@@ -94,13 +94,16 @@ if selection == 0:
     for s in new_suggestions:
         print("{}. {}".format(ind, s))
         ind += 1
-    selection = int(input("Selection: "))
+    selections = input("Selection: ").split()
+
+selections = [int(num) - 1 for num in selections]
+joined_selection = ' | '.join([suggestions[i] for i in selections])
 
 ticket = input("Ticket: ")
 commitMessage = ""
 if ticket:
-    commitMessage = 'git commit -am "{} {}"'.format(ticket, suggestions[selection - 1])
+    commitMessage = 'git commit -am "{} {}"'.format(ticket, joined_selection)
 else:
-    commitMessage = 'git commit -am "{}"'.format(suggestions[selection - 1])
+    commitMessage = 'git commit -am "{}"'.format(joined_selection)
 copy_to_clip(commitMessage)
 print("{} was copied to clipboard".format(commitMessage))
