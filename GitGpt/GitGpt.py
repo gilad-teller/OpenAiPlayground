@@ -2,13 +2,10 @@ import os
 import openai
 import subprocess
 import json
-
-def copy_to_clip(text):
-    command = 'echo {}|clip'.format(text.strip())
-    subprocess.check_call(command, shell=True)
+import pyperclip
 
 def run_subprocess(command):
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True, shell=True)
     if result.stderr and not result.stdout:
         raise Exception('{} returned error'.format(command), result.stderr)
     return result.stdout
@@ -105,5 +102,5 @@ if ticket:
     commitMessage = 'git commit -am "{} {}"'.format(ticket, joined_selection)
 else:
     commitMessage = 'git commit -am "{}"'.format(joined_selection)
-copy_to_clip(commitMessage)
+pyperclip.copy(commitMessage)
 print("{} was copied to clipboard".format(commitMessage))
