@@ -41,6 +41,7 @@ response = call_openai(prompt, size)
 url = response.data[0].url
 revised_prompt = response.data[0].revised_prompt
 print(url)
+print("")
 print(revised_prompt)
 input("Press ENTER to open URL")
 webbrowser.open_new_tab(url)
