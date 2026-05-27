@@ -3,6 +3,7 @@ import openai
 import subprocess
 import json
 import pyperclip
+import re
 
 def run_subprocess(command):
     result = subprocess.run(command, capture_output=True, text=True, shell=True)
@@ -15,6 +16,19 @@ def get_env_var(name):
     if not env_var:
         raise Exception('No {} environment variable'.format(name))
     return env_var
+
+def get_current_branch_name():
+    try:
+        branch = run_subprocess('git rev-parse --abbrev-ref HEAD').strip()
+        return branch
+    except Exception:
+        return None
+
+def extract_ticket_from_text(text: str):
+    if not text:
+        return None
+    m = re.search(r'([A-Z]{2,}-\d+)', text)
+    return m.group(1) if m else None
 
 def call_openai(messages):
     response = openai.chat.completions.create(
@@ -42,6 +56,11 @@ def extract_suggestions(response):
         print("\nCan't find suggestions. The response was:")
         print(firstChoice)
         raise
+
+def sanitize_for_powershell_single_quoted(s: str) -> str:
+    # Replace CR/LF with spaces, trim, and escape single quotes by doubling
+    s = s.replace('\r', ' ').replace('\n', ' ').strip()
+    return s.replace("'", "''")
 
 print('Getting environment variables')
 api_key = get_env_var("OPENAI_API_KEY")
@@ -74,7 +93,6 @@ except:
     messages.append(response['choices'][0]['message'])
     suggestions.extend(extract_suggestions(response))
 
-print("0. Get more suggestions")
 ind = 1
 for s in suggestions:
     print("{}. {}".format(ind, s))
@@ -82,25 +100,26 @@ for s in suggestions:
 
 selections = input("Selection: ").split()
 
-if selections[0] == '0':
-    print("Calling OpenAI")
-    messages.append({"role": "user", "content": "Give me a few more suggestions."})
-    second_response = call_openai(messages)
-    new_suggestions = extract_suggestions(second_response)
-    suggestions.extend(new_suggestions)
-    for s in new_suggestions:
-        print("{}. {}".format(ind, s))
-        ind += 1
-    selections = input("Selection: ").split()
-
 selections = [int(num) - 1 for num in selections]
-joined_selection = ' | '.join([suggestions[i] for i in selections])
+selected_messages = [suggestions[i] for i in selections]
 
-ticket = input("Ticket: ")
-commitMessage = ""
-if ticket:
-    commitMessage = 'git commit -am "{} {}"'.format(ticket, joined_selection)
+# Try to extract ticket from current branch name before asking
+extracted_ticket = extract_ticket_from_text(get_current_branch_name())
+if extracted_ticket:
+    ticket_input = input("Ticket ({}): ".format(extracted_ticket)).strip()
+    ticket = extracted_ticket if ticket_input == "" else ticket_input
 else:
-    commitMessage = 'git commit -am "{}"'.format(joined_selection)
+    ticket = input("Ticket: ").strip()
+commitMessage = ""
+if not selected_messages:
+    raise Exception('No selections provided')
+
+# Build commit command with multiple -m flags, using single quotes for PowerShell safety
+first_raw = ("{} {}".format(ticket, selected_messages[0]) if ticket else selected_messages[0])
+first_message = sanitize_for_powershell_single_quoted(first_raw)
+parts = ["git commit -am '{}'".format(first_message)]
+for msg in selected_messages[1:]:
+    parts.append("-m '{}'".format(sanitize_for_powershell_single_quoted(msg)))
+commitMessage = ' '.join(parts)
 pyperclip.copy(commitMessage)
 print("{} was copied to clipboard".format(commitMessage))
