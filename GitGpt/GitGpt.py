@@ -32,7 +32,7 @@ def extract_ticket_from_text(text: str):
 
 def call_openai(messages):
     response = openai.chat.completions.create(
-      model="gpt-4o",
+      model="gpt-5",
       response_format = { "type": "json_object" },
       messages = messages
     )
@@ -86,7 +86,7 @@ def get_suggestions_from_openai(diff_text: str):
     print('Calling OpenAI')
     messages = [
         {"role": "system", "content": "You are a helpful assistant, and an expert in creating git commit messages."},
-        {"role": "user", "content": "Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. \n" + diff_text}
+        {"role": "user", "content": "Suggest me a few good commit messages for my commit following conventional commit (<type>: <subject>). Return all suggestions as json array. Figure out the main changes made. Prefer changes to logic over changes to style, readability and tests. \n" + diff_text}
     ]
     response = call_openai(messages)
     messages.append(response.choices[0].message.content)
@@ -95,7 +95,7 @@ def get_suggestions_from_openai(diff_text: str):
         suggestions.extend(extract_suggestions(response))
     except:
         print("Calling OpenAI")
-        messages.append({"role": "user", "content": "I couldn't parse the json you sent. Pleaese fix it."})
+        messages.append({"role": "user", "content": "I couldn't parse the json you sent. Please fix it."})
         response = call_openai(messages)
         messages.append(response['choices'][0]['message'])
         suggestions.extend(extract_suggestions(response))
