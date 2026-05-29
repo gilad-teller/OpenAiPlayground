@@ -11,8 +11,7 @@ try:
 except ImportError:
     raise ImportError("Please install/upgrade the OpenAI Python SDK: pip install --upgrade openai")
 
-FAST_MODEL = "gpt-4o"
-BETTER_MODEL = "gpt-5"
+MODELS = ["gpt-4o", "gpt-5"]
 
 def run_subprocess(args: List[str], cwd: Optional[str] = None) -> str:
     """Run a subprocess command with arg list; raise on non-zero exit."""
@@ -375,24 +374,30 @@ def main():
     # 4) Build combined diff (unstaged + staged + synthetic for new)
     diff_text = build_combined_diff(files, include_paths)
 
-    # 5) Call OpenAI with fast model; allow re-run with better
-    model = FAST_MODEL
+    # 5) Call OpenAI; allow repeated re-runs with progressively better models
+    model_index = 0
     schema, messages = make_messages(diff_text)
-    print("\nCalling OpenAI (fast model)...")
-    suggestions = call_openai_and_extract(client, model, messages, schema)
+    print(f"\nCalling OpenAI ({MODELS[model_index]})...")
+    suggestions = call_openai_and_extract(client, MODELS[model_index], messages, schema)
 
-    for i, s in enumerate(suggestions, start=1):
-        print(f"{i}. {s}")
-
-    rerun = input("\nPress Enter to continue, or type 'r' to re-run with a better model: ").strip().lower()
-    if rerun == "r":
-        print("Re-running with better model...")
-        suggestions = call_openai_and_extract(client, BETTER_MODEL, messages, schema)
+    while True:
         for i, s in enumerate(suggestions, start=1):
             print(f"{i}. {s}")
 
+        user_input = input("\nType 'r' to re-run, or select suggestions (e.g., '1' or '1 3'): ").strip()
+        if user_input.lower() == "r":
+            model_index = min(model_index + 1, len(MODELS) - 1)
+            print(f"Re-running with {MODELS[model_index]}...")
+            suggestions = call_openai_and_extract(client, MODELS[model_index], messages, schema)
+            continue
+
+        selections = user_input.split()
+        if selections:
+            break
+
+        print("Please enter 'r' to re-run or one or more suggestion numbers.")
+
     # 6) Selection + optional ticket + commit command copied to clipboard
-    selections = input("\nSelection (e.g., '1' or '1 3'): ").split()
     idx = [int(num) - 1 for num in selections]
     selected_messages = [suggestions[i] for i in idx]
 
